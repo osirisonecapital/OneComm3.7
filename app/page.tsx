@@ -25,6 +25,22 @@ type Step =
   | 'loading' 
   | 'results';
 
+// Animated text component for key words
+const AnimatedGradientText = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
+  <motion.span 
+    className="gradient-text inline-block"
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ 
+      duration: 0.7, 
+      delay, 
+      ease: [0.14, 0.8, 0.4, 1] 
+    }}
+  >
+    {children}
+  </motion.span>
+);
+
 export default function Home() {
   // State for form values and flow control
   const [name, setName] = useState('');
@@ -178,22 +194,22 @@ export default function Home() {
                 {/* Hero Section */}
                 <div className="text-center mb-8">
                   <motion.h1 
-                    className="text-3xl md:text-4xl font-bold mb-4"
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2, duration: 0.5 }}
+                    className="text-3xl md:text-4xl font-bold mb-4 leading-relaxed"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
                   >
                     Discover Your{' '}
-                    <span className="gradient-text">Energy Type</span>
+                    <AnimatedGradientText delay={0.3}>Energy Type</AnimatedGradientText>
                     <br /> and{' '}
-                    <span className="gradient-text">Name Vibration</span>
+                    <AnimatedGradientText delay={0.6}>Name Vibration</AnimatedGradientText>
                   </motion.h1>
                   
                   <motion.p 
                     className="text-white/80 text-lg"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ delay: 0.4, duration: 0.5 }}
+                    transition={{ delay: 0.9, duration: 0.5 }}
                   >
                     Join thousands discovering their true energetic potential through
                     <br className="hidden md:block" /> ancient wisdom and modern science.

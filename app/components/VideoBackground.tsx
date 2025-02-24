@@ -73,6 +73,9 @@ const VideoBackground: React.FC<VideoBackgroundProps> = ({
         />
       )}
       
+      {/* Gradient Overlay for depth and softer contrast */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background-dark/40 via-transparent to-primary/20" />
+      
       {/* Overlay to ensure text readability */}
       <div className="absolute inset-0 bg-background-dark bg-opacity-60 backdrop-blur-sm" />
     </div>

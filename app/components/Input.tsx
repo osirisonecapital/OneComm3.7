@@ -34,27 +34,37 @@ const Input: React.FC<InputProps> = ({
   const handleBlur = () => setIsFocused(false);
   
   return (
-    <div className="relative w-full">
+    <motion.div 
+      className="relative w-full"
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
       {label && (
-        <label 
+        <motion.label 
           htmlFor={id || name} 
-          className="block text-sm font-medium text-white/80 mb-1"
+          className={`block text-sm font-medium mb-1 transition-colors duration-200 ${isFocused ? 'text-primary-light' : 'text-white/80'}`}
+          animate={{ 
+            x: isFocused ? 3 : 0,
+          }}
+          transition={{ duration: 0.2 }}
         >
           {label}
           {required && <span className="text-secondary-light ml-1">*</span>}
-        </label>
+        </motion.label>
       )}
       
       <motion.div
         className="relative"
-        initial={{ opacity: 0.8 }}
         animate={{ 
-          opacity: 1,
-          y: 0,
           scale: isFocused ? 1.02 : 1,
         }}
         transition={{ duration: 0.2 }}
       >
+        <motion.div
+          className={`absolute inset-0 rounded-xl transition-all duration-300 ${isFocused ? 'bg-primary/20 blur-md' : 'blur-none opacity-0'}`}
+          layoutId={`input-glow-${name || id}`}
+        />
         <input
           type={type}
           placeholder={placeholder}
@@ -64,7 +74,7 @@ const Input: React.FC<InputProps> = ({
           id={id || name}
           required={required}
           autoComplete={autoComplete}
-          className={`input-field ${error ? 'border-secondary/70' : ''} ${className}`}
+          className={`input-field relative z-10 ${error ? 'border-secondary/70' : isFocused ? 'border-primary/70' : 'border-white/20'} ${className}`}
           onFocus={handleFocus}
           onBlur={handleBlur}
         />
@@ -80,7 +90,7 @@ const Input: React.FC<InputProps> = ({
           </motion.p>
         )}
       </motion.div>
-    </div>
+    </motion.div>
   );
 };
 

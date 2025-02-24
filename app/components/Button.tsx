@@ -26,10 +26,10 @@ const Button: React.FC<ButtonProps> = ({
   icon,
   fullWidth = false,
 }) => {
-  const baseClasses = 'flex items-center justify-center rounded-xl font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2';
+  const baseClasses = 'flex items-center justify-center rounded-xl font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 relative overflow-hidden';
   
   const variantClasses = {
-    primary: 'gradient-button text-white',
+    primary: 'text-white',
     secondary: 'bg-white/10 backdrop-blur-sm text-white hover:bg-white/20',
     outline: 'border-2 border-primary/50 text-white hover:border-primary',
   };
@@ -48,11 +48,54 @@ const Button: React.FC<ButtonProps> = ({
       type={type}
       onClick={onClick}
       disabled={disabled || isLoading}
-      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${disabledClasses} ${widthClass} ${className}`}
-      whileHover={!disabled && !isLoading ? { scale: 1.02 } : {}}
+      className={`${baseClasses} ${variant === 'primary' ? '' : variantClasses[variant]} ${sizeClasses[size]} ${disabledClasses} ${widthClass} ${className}`}
+      whileHover={!disabled && !isLoading ? { 
+        scale: 1.02,
+        boxShadow: '0 0 20px rgba(156, 39, 176, 0.5)'
+      } : {}}
       whileTap={!disabled && !isLoading ? { scale: 0.98 } : {}}
       transition={{ duration: 0.2 }}
+      initial={{ y: 20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: 20, opacity: 0 }}
     >
+      {/* Animated background for primary button */}
+      {variant === 'primary' && (
+        <motion.div 
+          className="absolute inset-0 -z-10"
+          animate={{ 
+            background: [
+              'linear-gradient(90deg, #9c27b0 0%, #e91e63 100%)',
+              'linear-gradient(110deg, #e91e63 0%, #9c27b0 100%)',
+              'linear-gradient(130deg, #9c27b0 0%, #e91e63 100%)',
+              'linear-gradient(90deg, #9c27b0 0%, #e91e63 100%)'
+            ],
+          }}
+          transition={{ 
+            duration: 3, 
+            repeat: Infinity, 
+            ease: "linear",
+          }}
+        />
+      )}
+      
+      {/* Animated pulse effect on hover for primary button */}
+      {variant === 'primary' && !disabled && !isLoading && (
+        <motion.div 
+          className="absolute inset-0 bg-white/5 rounded-xl opacity-0"
+          initial={{ scale: 0.85, opacity: 0 }}
+          whileHover={{ 
+            scale: [0.85, 1.05, 0.85],
+            opacity: [0, 1, 0],
+            transition: { 
+              repeat: Infinity,
+              duration: 1.5,
+              ease: "easeInOut" 
+            }
+          }}
+        />
+      )}
+      
       {isLoading ? (
         <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -62,6 +105,15 @@ const Button: React.FC<ButtonProps> = ({
         <span className="mr-2">{icon}</span>
       ) : null}
       {children}
+      
+      {/* Highlight effect on hover */}
+      {variant === 'primary' && !disabled && !isLoading && (
+        <motion.div 
+          className="absolute inset-0 bg-white opacity-0"
+          whileHover={{ opacity: 0.1 }}
+          transition={{ duration: 0.2 }}
+        />
+      )}
     </motion.button>
   );
 };
