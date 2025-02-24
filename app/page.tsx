@@ -15,6 +15,7 @@ import QuestionCard from './components/QuestionCard';
 import InterludeCard from './components/InterludeCard';
 import LoadingCard from './components/LoadingCard';
 import ResultsCard from './components/ResultsCard';
+import Image from 'next/image';
 
 // Define the different steps of the questionnaire flow
 type Step = 
@@ -158,8 +159,8 @@ export default function Home() {
       {/* Content Container */}
       <div className="relative z-10 container mx-auto px-4 py-8 min-h-screen flex flex-col">
         {/* Header with Logo */}
-        <header className="py-4">
-          <Logo size="md" className="mx-auto md:mx-0" />
+        <header className="py-4 flex justify-center">
+          <Logo size="lg" className="mx-auto" />
         </header>
         
         {/* Main Content */}
@@ -300,8 +301,22 @@ export default function Home() {
         </div>
         
         {/* Footer */}
-        <footer className="py-4 text-center text-white/50 text-sm">
-          <p>© {new Date().getFullYear()} One Community. All rights reserved.</p>
+        <footer className="py-6 text-center">
+          <div className="flex flex-col items-center justify-center">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="mb-3"
+            >
+              <Image 
+                src="/images/logo.png" 
+                alt="One Community Logo" 
+                width={40} 
+                height={40}
+                className="mx-auto"
+              />
+            </motion.div>
+            <p className="text-white/50 text-sm">© {new Date().getFullYear()} One Community. All rights reserved.</p>
+          </div>
         </footer>
       </div>
     </main>
