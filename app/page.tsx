@@ -15,6 +15,7 @@ import QuestionCard from './components/QuestionCard';
 import InterludeCard from './components/InterludeCard';
 import LoadingCard from './components/LoadingCard';
 import ResultsCard from './components/ResultsCard';
+import GeminiInsightsCard from './components/GeminiInsightsCard';
 import Image from 'next/image';
 
 // Define the different steps of the questionnaire flow
@@ -23,7 +24,9 @@ type Step =
   | 'question' 
   | 'interlude' 
   | 'loading' 
-  | 'results';
+  | 'results'
+  | 'gemini'
+  | 'premium';
 
 // Animated text component for key words
 const AnimatedGradientText = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
@@ -57,6 +60,11 @@ export default function Home() {
   // Results
   const [dominantEnergyType, setDominantEnergyType] = useState('');
   const [nameVibration, setNameVibration] = useState({ number: 0, description: '' });
+  
+  // Gemini insights state
+  const [geminiInsights, setGeminiInsights] = useState<any>(null);
+  const [isLoadingInsights, setIsLoadingInsights] = useState(false);
+  const [insightsError, setInsightsError] = useState<string | null>(null);
 
   // Handle form submission on the initial screen
   const handleInitialSubmit = (e: React.FormEvent) => {
@@ -157,6 +165,52 @@ export default function Home() {
     
     setDominantEnergyType(dominant);
     setCurrentStep('results');
+  };
+
+  // Function to fetch deeper insights from Gemini
+  const fetchGeminiInsights = async () => {
+    setIsLoadingInsights(true);
+    setInsightsError(null);
+    setCurrentStep('gemini');
+    
+    try {
+      const response = await fetch('/api/gemini', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          questionnaireResponses: answers,
+          nameVibration,
+          energyType: energyTypes[dominantEnergyType],
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch insights');
+      }
+      
+      const data = await response.json();
+      setGeminiInsights(data);
+    } catch (error) {
+      console.error('Error fetching Gemini insights:', error);
+      setInsightsError('Failed to connect to the spiritual realm');
+    } finally {
+      setIsLoadingInsights(false);
+    }
+  };
+  
+  // Handle continuing to premium options
+  const handleGoToPremium = () => {
+    setCurrentStep('premium');
+    // This would navigate to your premium offerings or upsell page
+    // For now, we'll just redirect to a hypothetical upgrade page after 1 second
+    setTimeout(() => {
+      alert('This would navigate to your premium subscription page.');
+      // In a real implementation, you might use router.push('/premium') 
+      // or window.location.href = '/premium'
+    }, 1000);
   };
 
   // Scroll to top when changing steps (for mobile experience)
@@ -310,6 +364,34 @@ export default function Home() {
                   energyType={energyTypes[dominantEnergyType]}
                   nameVibration={nameVibration}
                   name={name}
+                />
+                
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.5, duration: 0.7 }}
+                  className="mt-8 flex justify-center"
+                >
+                  <Button onClick={fetchGeminiInsights}>
+                    Unlock Deeper Insights
+                  </Button>
+                </motion.div>
+              </motion.div>
+            )}
+            
+            {currentStep === 'gemini' && (
+              <motion.div
+                key="gemini"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7 }}
+                className="w-full"
+              >
+                <GeminiInsightsCard
+                  insights={geminiInsights}
+                  isLoading={isLoadingInsights}
+                  error={insightsError || undefined}
+                  onContinue={handleGoToPremium}
                 />
               </motion.div>
             )}
