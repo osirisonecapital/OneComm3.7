@@ -10,6 +10,17 @@
   --background-end-rgb: 240, 244, 255; /* Light blue */
 }
 
+/* Apply the gradient directly to html as well as body for maximum compatibility */
+html {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to right,
+      rgb(var(--background-start-rgb)),
+      rgb(var(--background-end-rgb))
+    )
+    fixed;
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
@@ -18,6 +29,10 @@ body {
       rgb(var(--background-end-rgb))
     )
     fixed;
+  /* Ensure the gradient takes up the full height */
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
 }
 
 .gradient-text {

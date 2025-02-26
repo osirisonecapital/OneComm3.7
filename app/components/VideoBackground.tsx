@@ -13,7 +13,7 @@ const VideoBackground: React.FC<VideoBackgroundProps> = ({
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [isError, setIsError] = useState(true); // Force using fallback during debug
 
   useEffect(() => {
     if (videoRef.current) {
@@ -73,11 +73,11 @@ const VideoBackground: React.FC<VideoBackgroundProps> = ({
         />
       )}
       
-      {/* Gradient Overlay for depth and softer contrast */}
-      <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-white/10 to-background-blue/80" />
+      {/* Gradient Overlay for depth and softer contrast - increased opacity */}
+      <div className="absolute inset-0 bg-gradient-to-r from-background via-white/10 to-background-blue" />
       
-      {/* Overlay to ensure text readability */}
-      <div className="absolute inset-0 bg-white bg-opacity-40 backdrop-blur-[2px]" />
+      {/* Removed the white overlay that might be making everything white */}
+      {/* <div className="absolute inset-0 bg-white bg-opacity-40 backdrop-blur-[2px]" /> */}
     </div>
   );
 };
