@@ -34,7 +34,7 @@ const Card: React.FC<CardProps> = ({
       animate={animate}
       exit={exit}
       transition={transition}
-      whileHover={{ boxShadow: '0 8px 30px rgba(156, 39, 176, 0.2)' }}
+      whileHover={{ boxShadow: '0 8px 30px rgba(35, 69, 57, 0.3)' }}
     >
       {/* Subtle background animation */}
       <motion.div 
@@ -42,11 +42,11 @@ const Card: React.FC<CardProps> = ({
         initial={{ opacity: 0.5 }}
         animate={{ 
           background: [
-            'radial-gradient(circle at 20% 20%, rgba(156, 39, 176, 0.08) 0%, rgba(13, 2, 10, 0) 50%)',
-            'radial-gradient(circle at 80% 80%, rgba(156, 39, 176, 0.08) 0%, rgba(13, 2, 10, 0) 50%)',
-            'radial-gradient(circle at 20% 80%, rgba(156, 39, 176, 0.08) 0%, rgba(13, 2, 10, 0) 50%)',
-            'radial-gradient(circle at 80% 20%, rgba(156, 39, 176, 0.08) 0%, rgba(13, 2, 10, 0) 50%)',
-            'radial-gradient(circle at 20% 20%, rgba(156, 39, 176, 0.08) 0%, rgba(13, 2, 10, 0) 50%)',
+            'radial-gradient(circle at 20% 20%, rgba(35, 69, 57, 0.12) 0%, rgba(25, 42, 86, 0) 50%)',
+            'radial-gradient(circle at 80% 80%, rgba(35, 69, 57, 0.12) 0%, rgba(25, 42, 86, 0) 50%)',
+            'radial-gradient(circle at 20% 80%, rgba(35, 69, 57, 0.12) 0%, rgba(25, 42, 86, 0) 50%)',
+            'radial-gradient(circle at 80% 20%, rgba(35, 69, 57, 0.12) 0%, rgba(25, 42, 86, 0) 50%)',
+            'radial-gradient(circle at 20% 20%, rgba(35, 69, 57, 0.12) 0%, rgba(25, 42, 86, 0) 50%)',
           ]
         }}
         transition={{ 
@@ -61,8 +61,8 @@ const Card: React.FC<CardProps> = ({
         className="absolute inset-0 rounded-2xl border border-transparent pointer-events-none opacity-0"
         whileHover={{ 
           opacity: 1,
-          borderColor: 'rgba(156, 39, 176, 0.3)',
-          boxShadow: 'inset 0 0 15px rgba(156, 39, 176, 0.1)' 
+          borderColor: 'rgba(35, 69, 57, 0.3)',
+          boxShadow: 'inset 0 0 15px rgba(35, 69, 57, 0.2)' 
         }}
         transition={{ duration: 0.3 }}
       />

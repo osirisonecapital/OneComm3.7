@@ -6,7 +6,7 @@
 
 :root {
   --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 121, 28, 38;
+  --background-start-rgb: 35, 69, 57;
   --background-end-rgb: 25, 42, 86;
 }
 
@@ -29,7 +29,7 @@ body {
 }
 
 .card {
-  @apply bg-background-light/70 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-primary/20;
+  @apply bg-background-light/70 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-background-light/20;
 }
 
 .input-field {

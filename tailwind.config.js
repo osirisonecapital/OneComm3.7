@@ -24,8 +24,8 @@ module.exports = {
           dark: '#002984',
         },
         background: {
-          DEFAULT: '#3a2a56', // Blend of red and blue
-          light: '#791c26', // Dark red
+          DEFAULT: '#2c3a58', // Blend of green and blue
+          light: '#234539', // Dark green with blue undertones
           dark: '#192a56', // Dark blue
         },
       },
