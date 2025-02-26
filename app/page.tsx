@@ -222,7 +222,8 @@ export default function Home() {
     <main className="min-h-screen relative">
       {/* Video Background */}
       <VideoBackground
-        src="/videos/energy-background.mp4"
+        src="/videos/landing.mp4"
+        mobileSrc="/videos/landing-mobile.mp4"
         fallbackImage="/images/fallback-bg.svg"
       />
       
