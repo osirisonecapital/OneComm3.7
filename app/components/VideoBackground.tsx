@@ -1,109 +1,136 @@
-import React, { useEffect, useRef, useState } from 'react';
+'use client';
+
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import Image from 'next/image';
 
 interface VideoBackgroundProps {
   src: string;
-  mobileSrc?: string;
-  fallbackImage?: string;
-  className?: string;
+  mobileVideoSrc?: string;
+  fallbackImageSrc: string;
 }
 
-const VideoBackground: React.FC<VideoBackgroundProps> = ({ 
-  src, 
-  mobileSrc,
-  fallbackImage = '/images/fallback-bg.svg',
-  className = ''
+export const VideoBackground: React.FC<VideoBackgroundProps> = ({
+  src,
+  mobileVideoSrc,
+  fallbackImageSrc,
 }) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [hasWindow, setHasWindow] = useState(false);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const attemptedPlay = useRef(false);
 
+  // Memoize the video source based on device type
+  const videoSrc = useMemo(() => {
+    if (!hasWindow) return '';
+    return isMobile && mobileVideoSrc ? mobileVideoSrc : src;
+  }, [hasWindow, isMobile, mobileVideoSrc, src]);
+
+  // Set up window detection and mobile detection
   useEffect(() => {
-    // Check if we're on a mobile device based on screen width
+    setHasWindow(true);
+    
+    // Check if device is mobile
     const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
+      const isMobileDevice = window.innerWidth < 768 || 
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      setIsMobile(isMobileDevice);
     };
-
-    // Run on initial load
+    
     checkMobile();
-
-    // Add listener for window resize
     window.addEventListener('resize', checkMobile);
-
-    return () => {
-      window.removeEventListener('resize', checkMobile);
-    };
+    
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Handle video playback with error recovery
   useEffect(() => {
-    if (videoRef.current) {
-      const video = videoRef.current;
-      
-      const handleLoadedData = () => {
-        setIsLoaded(true);
-      };
-      
-      const handleError = () => {
-        setIsError(true);
-      };
-      
-      video.addEventListener('loadeddata', handleLoadedData);
-      video.addEventListener('error', handleError);
-      
-      // For mobile devices, pause and play to overcome autoplay restrictions
-      const handleUserInteraction = () => {
-        if (video.paused) {
-          video.play().catch(() => {
-            setIsError(true);
-          });
+    if (!hasWindow || !videoRef.current || attemptedPlay.current) return;
+    
+    const playVideo = async () => {
+      attemptedPlay.current = true;
+      try {
+        // Using lower playback quality on mobile for better performance
+        if (videoRef.current) {
+          if (isMobile) {
+            videoRef.current.preload = 'metadata';
+            videoRef.current.setAttribute('playsinline', '');
+          } else {
+            videoRef.current.preload = 'auto';
+          }
+          
+          await videoRef.current.play();
+          setIsVideoLoaded(true);
         }
-      };
+      } catch (error) {
+        console.log('Video autoplay failed:', error);
+        // Fallback to showing the fallback image
+        setIsVideoLoaded(false);
+      }
+    };
+    
+    // Small delay to ensure browser is ready for playback
+    const timer = setTimeout(playVideo, 100);
+    return () => clearTimeout(timer);
+  }, [hasWindow, isMobile]);
+  
+  // Handle visibility change to pause video when tab is inactive
+  useEffect(() => {
+    if (!hasWindow) return;
+    
+    const handleVisibilityChange = () => {
+      if (!videoRef.current) return;
       
-      document.addEventListener('touchstart', handleUserInteraction, { once: true });
-      document.addEventListener('click', handleUserInteraction, { once: true });
-      
-      return () => {
-        video.removeEventListener('loadeddata', handleLoadedData);
-        video.removeEventListener('error', handleError);
-        document.removeEventListener('touchstart', handleUserInteraction);
-        document.removeEventListener('click', handleUserInteraction);
-      };
-    }
-  }, []);
+      if (document.hidden) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play().catch(err => console.log('Play on visibility change failed:', err));
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [hasWindow]);
 
-  // Determine which source to use based on device
-  const videoSource = mobileSrc && isMobile ? mobileSrc : src;
+  // Apply different styles for mobile vs desktop
+  const videoClasses = useMemo(() => {
+    const baseClasses = "absolute inset-0 w-full h-full object-cover";
+    return `${baseClasses} ${isMobile ? 'scale-[1.02]' : 'scale-[1.01]'}`;
+  }, [isMobile]);
 
   return (
-    <div className={`absolute inset-0 overflow-hidden ${className}`}>
-      {!isError ? (
+    <div className="fixed inset-0 overflow-hidden z-[-1]">
+      {hasWindow && (
         <video
           ref={videoRef}
+          playsInline
           autoPlay
           muted
           loop
-          playsInline
-          preload="auto"
-          className={`object-cover w-full h-full transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+          className={videoClasses}
+          poster={fallbackImageSrc}
+          style={{ opacity: isVideoLoaded ? 1 : 0, transition: 'opacity 1s ease-in-out' }}
         >
-          <source src={videoSource} type="video/mp4" />
-          {/* Fallback text for browsers that don't support video */}
-          Your browser does not support the video tag.
+          <source src={videoSrc} type="video/mp4" />
         </video>
-      ) : (
-        <div 
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${fallbackImage})` }}
-        />
       )}
       
-      {/* Gradient Overlay for depth and softer contrast */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background-dark/40 via-transparent to-background-light/20" />
+      {/* Fallback image and loading state handler */}
+      <div 
+        className="absolute inset-0 w-full h-full"
+        style={{ opacity: isVideoLoaded ? 0 : 1, transition: 'opacity 1s ease-in-out' }}
+      >
+        <Image
+          src={fallbackImageSrc}
+          alt="Background"
+          fill
+          priority
+          className="object-cover"
+        />
+      </div>
       
-      {/* Overlay to ensure text readability */}
-      <div className="absolute inset-0 bg-background-dark bg-opacity-60 backdrop-blur-sm" />
+      {/* Overlay gradient for better readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background/30 to-background/80" />
     </div>
   );
-};
-
-export default VideoBackground; 
+}; 

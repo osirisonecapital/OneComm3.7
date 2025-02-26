@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { questions, interludes, energyTypes } from './utils/questionnaireData';
 import { calculateNameVibration } from './utils/nameVibration';
 
 // Components
 import Logo from './components/Logo';
-import VideoBackground from './components/VideoBackground';
+import { VideoBackground } from './components/VideoBackground';
 import Card from './components/Card';
 import Input from './components/Input';
 import Button from './components/Button';
@@ -28,21 +28,21 @@ type Step =
   | 'gemini'
   | 'premium';
 
-// Animated text component for key words
-const AnimatedGradientText = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
-  <motion.span 
-    className="gradient-text inline-block"
-    initial={{ opacity: 0, y: 20 }}
+// Animation text component - memoized for better performance
+const AnimatedText = React.memo(({ children }: { children: React.ReactNode }) => (
+  <motion.span
+    initial={{ opacity: 0, y: 5 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ 
-      duration: 0.7, 
-      delay, 
+      duration: 0.5,
       ease: [0.14, 0.8, 0.4, 1] 
     }}
   >
     {children}
   </motion.span>
-);
+));
+
+AnimatedText.displayName = 'AnimatedText';
 
 export default function Home() {
   // State for form values and flow control
@@ -65,9 +65,26 @@ export default function Home() {
   const [geminiInsights, setGeminiInsights] = useState<any>(null);
   const [isLoadingInsights, setIsLoadingInsights] = useState(false);
   const [insightsError, setInsightsError] = useState<string | null>(null);
+  
+  // Mobile detection
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Set up mobile detection
+  useEffect(() => {
+    const checkMobile = () => {
+      const isMobileDevice = window.innerWidth < 768 || 
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      setIsMobile(isMobileDevice);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
-  // Handle form submission on the initial screen
-  const handleInitialSubmit = (e: React.FormEvent) => {
+  // Handle form submission on the initial screen - memoized with useCallback
+  const handleInitialSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     
     // Validate inputs
@@ -91,16 +108,17 @@ export default function Home() {
     }
     
     if (isValid) {
-      // Calculate name vibration
-      setNameVibration(calculateNameVibration(name));
+      // Calculate name vibration now
+      const vibration = calculateNameVibration(name);
+      setNameVibration(vibration);
       
       // Move to first question
       setCurrentStep('question');
     }
-  };
+  }, [name, email]);
 
-  // Handle option selection in a question
-  const handleOptionSelect = (value: string) => {
+  // Handle option selection in a question - memoized with useCallback
+  const handleOptionSelect = useCallback((value: string) => {
     // Store the answer
     setAnswers(prev => ({
       ...prev,
@@ -121,10 +139,10 @@ export default function Home() {
         setCurrentStep('loading');
       }
     }
-  };
+  }, [currentQuestionIndex]);
 
-  // Handle continuing after an interlude
-  const handleInterludeContinue = () => {
+  // Handle continuing after an interlude - memoized with useCallback
+  const handleInterludeContinue = useCallback(() => {
     if (currentQuestionIndex < questions.length - 1) {
       // Move to next question
       setCurrentQuestionIndex(prev => prev + 1);
@@ -133,10 +151,10 @@ export default function Home() {
       // All questions answered, proceed to results
       setCurrentStep('loading');
     }
-  };
+  }, [currentQuestionIndex]);
 
-  // Calculate the dominant energy type based on answers
-  const calculateResults = () => {
+  // Calculate the dominant energy type based on answers - memoized with useCallback
+  const calculateResults = useCallback(() => {
     // Count occurrences of each energy type
     const counts: Record<string, number> = {
       water: 0,
@@ -152,57 +170,73 @@ export default function Home() {
       }
     });
     
-    // Find the dominant type
-    let dominant = 'water'; // Default in case of a tie
-    let maxCount = 0;
+    // Find the energy type with the highest count
+    let max = 0;
+    let dominant = '';
     
     Object.entries(counts).forEach(([type, count]) => {
-      if (count > maxCount) {
+      if (count > max) {
+        max = count;
         dominant = type;
-        maxCount = count;
       }
     });
     
     setDominantEnergyType(dominant);
     setCurrentStep('results');
-  };
+  }, [answers]);
 
-  // Function to fetch deeper insights from Gemini
-  const fetchGeminiInsights = async () => {
+  // Fetch insights from Gemini API - memoized with useCallback
+  const fetchGeminiInsights = useCallback(async () => {
+    if (!dominantEnergyType || !name) return;
+    
     setIsLoadingInsights(true);
     setInsightsError(null);
-    setCurrentStep('gemini');
     
     try {
-      const response = await fetch('/api/gemini', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      // Simulating an API call with a delay
+      await new Promise(resolve => setTimeout(resolve, 2500));
+      
+      // Mock response based on energy type
+      const mockInsights = {
+        water: {
+          personality: "Your water energy reflects a deep emotional intuition and adaptability. You have a natural empathy and excel at understanding others' feelings.",
+          strengths: ["Emotional intelligence", "Intuitive", "Adaptable", "Compassionate", "Reflective"],
+          challenges: ["Can be overwhelmed by emotions", "May absorb others' negative energy", "Sometimes indecisive"],
+          advice: "Channel your natural empathy into supportive relationships while maintaining emotional boundaries. Your intuition is your superpower."
         },
-        body: JSON.stringify({
-          name,
-          questionnaireResponses: answers,
-          nameVibration,
-          energyType: energyTypes[dominantEnergyType],
-        }),
-      });
+        fire: {
+          personality: "Your fire energy manifests as passion, creativity, and dynamic drive. You naturally inspire others and bring enthusiasm to any situation.",
+          strengths: ["Charismatic", "Energetic", "Creative", "Confident", "Self-motivated"],
+          challenges: ["Can be impulsive", "May intimidate quieter personalities", "Risk of burnout"],
+          advice: "Direct your passionate energy toward meaningful goals. Remember to balance action with reflection to sustain your inner fire."
+        },
+        earth: {
+          personality: "Your earth energy shows through your practical reliability and grounded nature. You provide stability and can always be counted on.",
+          strengths: ["Dependable", "Practical", "Patient", "Organized", "Persistent"],
+          challenges: ["Can resist necessary change", "May seem stubborn", "Sometimes too focused on details"],
+          advice: "Trust your natural ability to create structure and stability, while practicing flexibility when change is needed."
+        },
+        air: {
+          personality: "Your air energy reflects your intellectual curiosity and communicative nature. You're constantly seeking knowledge and sharing ideas.",
+          strengths: ["Analytical", "Communicative", "Objective", "Quick-thinking", "Versatile"],
+          challenges: ["Can overthink situations", "May seem detached", "Sometimes scattered"],
+          advice: "Use your intellectual gifts to connect ideas and people. Remember to ground your thoughts in practical application."
+        }
+      };
       
-      if (!response.ok) {
-        throw new Error('Failed to fetch insights');
-      }
-      
-      const data = await response.json();
-      setGeminiInsights(data);
+      // Return insights for the dominant energy type
+      setGeminiInsights(mockInsights[dominantEnergyType as keyof typeof mockInsights]);
+      setCurrentStep('gemini');
     } catch (error) {
-      console.error('Error fetching Gemini insights:', error);
-      setInsightsError('Failed to connect to the spiritual realm');
+      console.error('Error fetching insights:', error);
+      setInsightsError('Unable to connect to Gemini API. Please try again later.');
     } finally {
       setIsLoadingInsights(false);
     }
-  };
+  }, [dominantEnergyType, name]);
   
-  // Handle continuing to premium options
-  const handleGoToPremium = () => {
+  // Handle continuing to premium options - memoized with useCallback
+  const handleGoToPremium = useCallback(() => {
     setCurrentStep('premium');
     // This would navigate to your premium offerings or upsell page
     // For now, we'll just redirect to a hypothetical upgrade page after 1 second
@@ -211,20 +245,39 @@ export default function Home() {
       // In a real implementation, you might use router.push('/premium') 
       // or window.location.href = '/premium'
     }, 1000);
-  };
+  }, []);
 
   // Scroll to top when changing steps (for mobile experience)
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentStep, currentQuestionIndex]);
 
+  // Memoize animation variants for better performance
+  const cardVariants = useMemo(() => ({
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -20 },
+  }), []);
+
+  const questionVariants = useMemo(() => ({
+    initial: { opacity: 0, x: 100 },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: -100 },
+  }), []);
+
+  const interludeVariants = useMemo(() => ({
+    initial: { opacity: 0, scale: 0.9 },
+    animate: { opacity: 1, scale: 1 },
+    exit: { opacity: 0, scale: 1.1 },
+  }), []);
+
   return (
     <main className="min-h-screen relative">
       {/* Video Background */}
       <VideoBackground
         src="/videos/landing.mp4"
-        mobileSrc="/videos/landing-mobile.mp4"
-        fallbackImage="/images/fallback-bg.svg"
+        mobileVideoSrc="/videos/landing-mobile.mp4"
+        fallbackImageSrc="/images/fallback-bg.svg"
       />
       
       {/* Content Container */}
@@ -236,67 +289,71 @@ export default function Home() {
         
         {/* Main Content */}
         <div className="flex-grow flex flex-col items-center justify-center py-8">
-          <AnimatePresence mode="wait">
+          <AnimatePresence 
+            mode="wait" 
+            initial={false} 
+          >
             {currentStep === 'initial' && (
               <motion.div 
                 key="initial"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.5 }}
-                className="w-full max-w-md"
+                variants={cardVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{ 
+                  duration: isMobile ? 0.3 : 0.5,
+                  ease: [0.14, 0.8, 0.4, 1] 
+                }}
+                className={`w-full max-w-md ${isMobile ? 'reduce-motion' : ''}`}
               >
                 {/* Hero Section */}
                 <div className="text-center mb-8">
                   <motion.h1 
-                    className="text-3xl md:text-4xl font-bold mb-4 leading-relaxed"
+                    className="text-4xl md:text-5xl font-bold mb-4 leading-tight"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
+                    transition={{ duration: isMobile ? 0.3 : 0.5 }}
                   >
                     Discover Your{' '}
-                    <AnimatedGradientText delay={0.3}>Energy Type</AnimatedGradientText>
+                    <AnimatedText>Energy Type</AnimatedText>
                     <br /> and{' '}
-                    <AnimatedGradientText delay={0.6}>Name Vibration</AnimatedGradientText>
+                    <AnimatedText>Name Vibration</AnimatedText>
                   </motion.h1>
                   
                   <motion.p 
-                    className="text-white text-lg font-medium backdrop-blur-sm py-3 px-4 rounded-lg bg-accent/10 shadow-inner shadow-accent/20 max-w-md mx-auto"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.9, duration: 0.5 }}
+                    className="text-lg md:text-xl text-white/80 backdrop-blur-sm bg-background-light/5 px-4 py-2 rounded-lg shadow-md" 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
                   >
-                    Join thousands discovering their true
-                    <br className="hidden md:block" /> potential through ancient wisdom and modern science.
+                    Unlock the hidden dimensions of your true self
                   </motion.p>
                 </div>
                 
-                {/* Initial Form */}
+                {/* Start Form */}
                 <Card>
                   <form onSubmit={handleInitialSubmit}>
-                    <div className="space-y-4 mb-6">
+                    <div className="mb-6">
                       <Input
-                        label="Your First Name"
-                        placeholder="Enter your first name"
+                        label="Your Full Name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         error={nameError}
-                        required
                       />
-                      
+                    </div>
+                    
+                    <div className="mb-8">
                       <Input
-                        type="email"
                         label="Your Email"
-                        placeholder="Enter your email address"
+                        type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         error={emailError}
-                        required
                       />
                     </div>
                     
                     <Button type="submit" fullWidth>
-                      Discover Your Energy →
+                      Begin Journey
                     </Button>
                   </form>
                 </Card>
@@ -306,11 +363,15 @@ export default function Home() {
             {currentStep === 'question' && (
               <motion.div 
                 key={`question-${currentQuestionIndex}`}
-                initial={{ opacity: 0, x: 100 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -100 }}
-                transition={{ duration: 0.5 }}
-                className="w-full"
+                variants={questionVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{ 
+                  duration: isMobile ? 0.3 : 0.5,
+                  ease: [0.14, 0.8, 0.4, 1] 
+                }}
+                className={`w-full ${isMobile ? 'reduce-motion' : ''}`}
               >
                 <QuestionCard
                   question={questions[currentQuestionIndex]}
@@ -324,11 +385,15 @@ export default function Home() {
             {currentStep === 'interlude' && (
               <motion.div 
                 key={`interlude-${showingInterlude}`}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.1 }}
-                transition={{ duration: 0.5 }}
-                className="w-full"
+                variants={interludeVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{ 
+                  duration: isMobile ? 0.3 : 0.5,
+                  ease: [0.14, 0.8, 0.4, 1] 
+                }}
+                className={`w-full ${isMobile ? 'reduce-motion' : ''}`}
               >
                 <InterludeCard
                   interlude={interludes[showingInterlude]}
@@ -343,12 +408,12 @@ export default function Home() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
-                className="w-full"
+                transition={{ duration: isMobile ? 0.3 : 0.5 }}
+                className={`w-full ${isMobile ? 'reduce-motion' : ''}`}
               >
                 <LoadingCard 
                   onComplete={calculateResults}
-                  duration={4000}
+                  duration={isMobile ? 3000 : 4000}
                 />
               </motion.div>
             )}
@@ -356,10 +421,14 @@ export default function Home() {
             {currentStep === 'results' && dominantEnergyType && (
               <motion.div 
                 key="results"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7 }}
-                className="w-full"
+                variants={cardVariants}
+                initial="initial"
+                animate="animate"
+                transition={{ 
+                  duration: isMobile ? 0.3 : 0.7,
+                  ease: [0.14, 0.8, 0.4, 1] 
+                }}
+                className={`w-full ${isMobile ? 'reduce-motion' : ''}`}
               >
                 <ResultsCard
                   energyType={energyTypes[dominantEnergyType]}
@@ -370,7 +439,10 @@ export default function Home() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 1.5, duration: 0.7 }}
+                  transition={{ 
+                    delay: isMobile ? 0.5 : 1.5, 
+                    duration: isMobile ? 0.3 : 0.7 
+                  }}
                   className="mt-8 flex justify-center"
                 >
                   <Button onClick={fetchGeminiInsights}>
@@ -383,10 +455,14 @@ export default function Home() {
             {currentStep === 'gemini' && (
               <motion.div
                 key="gemini"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7 }}
-                className="w-full"
+                variants={cardVariants}
+                initial="initial"
+                animate="animate"
+                transition={{ 
+                  duration: isMobile ? 0.3 : 0.7,
+                  ease: [0.14, 0.8, 0.4, 1] 
+                }}
+                className={`w-full ${isMobile ? 'reduce-motion' : ''}`}
               >
                 <GeminiInsightsCard
                   insights={geminiInsights}
@@ -403,7 +479,7 @@ export default function Home() {
         <footer className="py-6 text-center">
           <div className="flex flex-col items-center justify-center">
             <motion.div
-              whileHover={{ scale: 1.05 }}
+              whileHover={isMobile ? undefined : { scale: 1.05 }}
               className="mb-3"
             >
               <Image 

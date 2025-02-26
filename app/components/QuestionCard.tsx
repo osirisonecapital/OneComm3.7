@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useMemo, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Question, QuestionOption } from '../utils/questionnaireData';
 import Card from './Card';
 
@@ -10,21 +10,24 @@ interface QuestionCardProps {
   totalQuestions: number;
 }
 
-const QuestionCard: React.FC<QuestionCardProps> = ({ 
+const QuestionCard: React.FC<QuestionCardProps> = React.memo(({ 
   question, 
   onOptionSelect, 
   currentIndex, 
   totalQuestions 
 }) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [animationComplete, setAnimationComplete] = useState(false);
 
-  const handleOptionSelect = (value: string) => {
+  // Memoize the handle option select function
+  const handleOptionSelect = useCallback((value: string) => {
     setSelectedOption(value);
     // Add a small delay before triggering the callback for visual feedback
     setTimeout(() => onOptionSelect(value), 300);
-  };
+  }, [onOptionSelect]);
 
-  const optionVariants = {
+  // Memoize animation variants to prevent recreating on every render
+  const optionVariants = useMemo(() => ({
     hidden: { opacity: 0, y: 20 },
     visible: (i: number) => ({
       opacity: 1,
@@ -32,7 +35,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
       transition: {
         delay: 0.1 + i * 0.1,
         duration: 0.3,
-      },
+      }
     }),
     hover: {
       scale: 1.02,
@@ -44,7 +47,12 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
       scale: 0.98,
       backgroundColor: 'rgba(255, 255, 255, 0.2)',
     }
-  };
+  }), []);
+
+  // Function to handle animation completion
+  const handleAnimationComplete = useCallback(() => {
+    setAnimationComplete(true);
+  }, []);
 
   return (
     <Card className="w-full max-w-md mx-auto">
@@ -75,10 +83,16 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
             onClick={() => handleOptionSelect(option.value)}
             variants={optionVariants}
             custom={i}
-            initial="hidden"
+            initial={animationComplete ? false : "hidden"}
             animate="visible"
             whileHover={selectedOption !== option.value ? "hover" : {}}
             whileTap="tap"
+            onAnimationComplete={i === question.options.length - 1 ? handleAnimationComplete : undefined}
+            layoutId={`option-${option.id}`}
+            transition={{
+              layout: { duration: 0.2 },
+              ...optionVariants.visible(i).transition
+            }}
           >
             {option.text}
           </motion.button>
@@ -86,6 +100,8 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
       </div>
     </Card>
   );
-};
+});
+
+QuestionCard.displayName = 'QuestionCard';
 
 export default QuestionCard; 
