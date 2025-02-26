@@ -30,8 +30,8 @@ const Button: React.FC<ButtonProps> = ({
   
   const variantClasses = {
     primary: 'text-white',
-    secondary: 'bg-background/60 backdrop-blur-sm text-gray-700 hover:bg-background-dark/50',
-    outline: 'border-2 border-primary/50 text-primary hover:border-primary',
+    secondary: 'bg-white/10 backdrop-blur-sm text-white hover:bg-white/20',
+    outline: 'border-2 border-primary/50 text-white hover:border-primary',
   };
   
   const sizeClasses = {
@@ -51,7 +51,7 @@ const Button: React.FC<ButtonProps> = ({
       className={`${baseClasses} ${variant === 'primary' ? '' : variantClasses[variant]} ${sizeClasses[size]} ${disabledClasses} ${widthClass} ${className}`}
       whileHover={!disabled && !isLoading ? { 
         scale: 1.02,
-        boxShadow: '0 0 15px rgba(142, 36, 170, 0.4)'
+        boxShadow: '0 0 20px rgba(156, 39, 176, 0.5)'
       } : {}}
       whileTap={!disabled && !isLoading ? { scale: 0.98 } : {}}
       transition={{ duration: 0.2 }}
@@ -65,10 +65,10 @@ const Button: React.FC<ButtonProps> = ({
           className="absolute inset-0 -z-10"
           animate={{ 
             background: [
-              'linear-gradient(90deg, #8e24aa 0%, #d81b60 100%)',
-              'linear-gradient(110deg, #d81b60 0%, #8e24aa 100%)',
-              'linear-gradient(130deg, #8e24aa 0%, #d81b60 100%)',
-              'linear-gradient(90deg, #8e24aa 0%, #d81b60 100%)'
+              'linear-gradient(90deg, #9c27b0 0%, #e91e63 100%)',
+              'linear-gradient(110deg, #e91e63 0%, #9c27b0 100%)',
+              'linear-gradient(130deg, #9c27b0 0%, #e91e63 100%)',
+              'linear-gradient(90deg, #9c27b0 0%, #e91e63 100%)'
             ],
           }}
           transition={{ 
@@ -82,7 +82,7 @@ const Button: React.FC<ButtonProps> = ({
       {/* Animated pulse effect on hover for primary button */}
       {variant === 'primary' && !disabled && !isLoading && (
         <motion.div 
-          className="absolute inset-0 bg-white/15 rounded-xl opacity-0"
+          className="absolute inset-0 bg-white/5 rounded-xl opacity-0"
           initial={{ scale: 0.85, opacity: 0 }}
           whileHover={{ 
             scale: [0.85, 1.05, 0.85],
@@ -110,7 +110,7 @@ const Button: React.FC<ButtonProps> = ({
       {variant === 'primary' && !disabled && !isLoading && (
         <motion.div 
           className="absolute inset-0 bg-white opacity-0"
-          whileHover={{ opacity: 0.15 }}
+          whileHover={{ opacity: 0.1 }}
           transition={{ duration: 0.2 }}
         />
       )}

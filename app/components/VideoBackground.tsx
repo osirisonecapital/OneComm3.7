@@ -13,7 +13,7 @@ const VideoBackground: React.FC<VideoBackgroundProps> = ({
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isError, setIsError] = useState(true); // Force using fallback during debug
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -60,7 +60,7 @@ const VideoBackground: React.FC<VideoBackgroundProps> = ({
           muted
           loop
           playsInline
-          className={`object-cover w-full h-full transition-opacity duration-1000 ${isLoaded ? 'opacity-30' : 'opacity-0'}`}
+          className={`object-cover w-full h-full transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         >
           <source src={src} type="video/mp4" />
           {/* Fallback text for browsers that don't support video */}
@@ -73,11 +73,11 @@ const VideoBackground: React.FC<VideoBackgroundProps> = ({
         />
       )}
       
-      {/* Gradient Overlay for depth and softer contrast - increased opacity */}
-      <div className="absolute inset-0 bg-gradient-to-r from-background via-black/10 to-background-blue" />
+      {/* Gradient Overlay for depth and softer contrast */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background-dark/40 via-transparent to-background-light/20" />
       
-      {/* Add a subtle darkening overlay */}
-      <div className="absolute inset-0 bg-black bg-opacity-15 backdrop-blur-[1px]" />
+      {/* Overlay to ensure text readability */}
+      <div className="absolute inset-0 bg-background-dark bg-opacity-60 backdrop-blur-sm" />
     </div>
   );
 };
