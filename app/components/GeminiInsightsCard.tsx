@@ -84,14 +84,14 @@ const GeminiInsightsCard: React.FC<GeminiInsightsCardProps> = ({
         </motion.div>
         
         <motion.p 
-          className="text-white/70 text-center mb-6"
+          className="text-gray-600 text-center mb-6"
           variants={itemVariants}
         >
           Our mystical algorithms are analyzing your energy pattern and crafting personalized spiritual guidance...
         </motion.p>
         
         <motion.p 
-          className="text-sm text-white/50 italic"
+          className="text-sm text-gray-500 italic"
           variants={itemVariants}
         >
           This usually takes less than 15 seconds
@@ -108,16 +108,16 @@ const GeminiInsightsCard: React.FC<GeminiInsightsCardProps> = ({
         variants={containerVariants}
       >
         <motion.div className="text-center mb-6" variants={itemVariants}>
-          <h3 className="text-2xl font-semibold text-secondary-light mb-4">
+          <h3 className="text-2xl font-semibold text-secondary mb-4">
             Connection to the Spiritual Realm Interrupted
           </h3>
-          <p className="text-white/70">
+          <p className="text-gray-600">
             We're unable to access the deeper insights at this moment. The cosmic energies may be fluctuating.
           </p>
         </motion.div>
         
         <motion.div className="mb-8" variants={itemVariants}>
-          <p className="text-white/70 text-center">
+          <p className="text-gray-600 text-center">
             For the most accurate and comprehensive reading, consider our premium personalized analysis service.
           </p>
         </motion.div>
@@ -141,24 +141,24 @@ const GeminiInsightsCard: React.FC<GeminiInsightsCardProps> = ({
         <h3 className="text-2xl font-semibold gradient-text mb-4">
           Your Deeper Spiritual Insights
         </h3>
-        <p className="text-white/70">
+        <p className="text-gray-600">
           Based on your {insights.energyType.name} energy and Name Vibration {insights.nameVibration.number}, we've unlocked these personalized insights.
         </p>
       </motion.div>
       
       <motion.div className="mb-10" variants={itemVariants}>
-        <div className="bg-background/30 rounded-xl p-6 mb-8 border border-primary/20">
-          <h4 className="text-xl font-medium text-primary-light mb-4">Key Insights:</h4>
+        <div className="bg-background/50 rounded-xl p-6 mb-8 border border-primary/10">
+          <h4 className="text-xl font-medium text-primary mb-4">Key Insights:</h4>
           <ul className="space-y-4">
             {insights.insights.map((insight, index) => (
               <motion.li 
                 key={index} 
-                className="flex items-start text-white/90"
+                className="flex items-start text-gray-700"
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 + (index * 0.2) }}
               >
-                <span className="text-primary-light mr-2 mt-1">✦</span> 
+                <span className="text-primary mr-2 mt-1">✦</span> 
                 <span>{insight}</span>
               </motion.li>
             ))}
@@ -166,13 +166,13 @@ const GeminiInsightsCard: React.FC<GeminiInsightsCardProps> = ({
         </div>
         
         <motion.div 
-          className="bg-background/30 rounded-xl p-6 border border-secondary/20"
+          className="bg-background/50 rounded-xl p-6 border border-secondary/10"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2 }}
         >
-          <h4 className="text-xl font-medium text-secondary-light mb-4">Personal Message:</h4>
-          <p className="text-white/90 italic">
+          <h4 className="text-xl font-medium text-secondary mb-4">Personal Message:</h4>
+          <p className="text-gray-700 italic">
             "{insights.message}"
           </p>
         </motion.div>

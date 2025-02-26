@@ -60,7 +60,7 @@ const VideoBackground: React.FC<VideoBackgroundProps> = ({
           muted
           loop
           playsInline
-          className={`object-cover w-full h-full transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+          className={`object-cover w-full h-full transition-opacity duration-1000 ${isLoaded ? 'opacity-30' : 'opacity-0'}`}
         >
           <source src={src} type="video/mp4" />
           {/* Fallback text for browsers that don't support video */}
@@ -74,10 +74,10 @@ const VideoBackground: React.FC<VideoBackgroundProps> = ({
       )}
       
       {/* Gradient Overlay for depth and softer contrast */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background-dark/40 via-transparent to-primary/20" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-white/10 to-background-blue/80" />
       
       {/* Overlay to ensure text readability */}
-      <div className="absolute inset-0 bg-background-dark bg-opacity-60 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-white bg-opacity-40 backdrop-blur-[2px]" />
     </div>
   );
 };

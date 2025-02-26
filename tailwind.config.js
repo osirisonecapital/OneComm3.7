@@ -9,24 +9,25 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#9c27b0', // Purple
-          light: '#d05ce3',
-          dark: '#6a0080',
+          DEFAULT: '#8e24aa', // Slightly darker purple for better contrast on light bg
+          light: '#b935d2',
+          dark: '#5c007a',
         },
         secondary: {
-          DEFAULT: '#e91e63', // Pink
-          light: '#ff6090',
-          dark: '#b0003a',
+          DEFAULT: '#d81b60', // Darker pink for better contrast on light bg
+          light: '#ff5c8d',
+          dark: '#a00037',
         },
         accent: {
-          DEFAULT: '#3f51b5', // Blue
-          light: '#757de8',
-          dark: '#002984',
+          DEFAULT: '#3949ab', // Slightly darker blue for contrast
+          light: '#6f74dd',
+          dark: '#00227b',
         },
         background: {
-          DEFAULT: '#13020a', // Dark purple/black
-          light: '#1e0f1a',
-          dark: '#090105',
+          DEFAULT: '#fef2f6', // Light pink/red
+          light: '#ffffff',
+          dark: '#f8e5eb',
+          blue: '#f0f4ff', // Light blue for gradient
         },
       },
       fontFamily: {

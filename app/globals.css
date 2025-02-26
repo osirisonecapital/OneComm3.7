@@ -5,15 +5,15 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 19, 2, 10;
-  --background-end-rgb: 13, 1, 7;
+  --foreground-rgb: 50, 25, 45;
+  --background-start-rgb: 254, 242, 246; /* Light pink/red */
+  --background-end-rgb: 240, 244, 255; /* Light blue */
 }
 
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
-      to bottom,
+      to right,
       rgb(var(--background-start-rgb)),
       rgb(var(--background-end-rgb))
     )
@@ -21,7 +21,7 @@ body {
 }
 
 .gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-light to-secondary-light;
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
 }
 
 .gradient-button {
@@ -29,11 +29,11 @@ body {
 }
 
 .card {
-  @apply bg-background-light/70 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-primary/20;
+  @apply bg-white/90 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-primary/10;
 }
 
 .input-field {
-  @apply w-full bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all;
+  @apply w-full bg-white/70 backdrop-blur-sm border border-primary/20 rounded-xl p-4 text-gray-800 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all;
 }
 
 /* Custom scrollbar */
