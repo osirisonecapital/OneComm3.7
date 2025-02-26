@@ -51,7 +51,7 @@ const Button: React.FC<ButtonProps> = ({
       className={`${baseClasses} ${variant === 'primary' ? '' : variantClasses[variant]} ${sizeClasses[size]} ${disabledClasses} ${widthClass} ${className}`}
       whileHover={!disabled && !isLoading ? { 
         scale: 1.02,
-        boxShadow: '0 0 20px rgba(156, 39, 176, 0.5)'
+        boxShadow: '0 0 20px rgba(63, 81, 181, 0.5)'
       } : {}}
       whileTap={!disabled && !isLoading ? { scale: 0.98 } : {}}
       transition={{ duration: 0.2 }}
@@ -65,10 +65,10 @@ const Button: React.FC<ButtonProps> = ({
           className="absolute inset-0 -z-10"
           animate={{ 
             background: [
-              'linear-gradient(90deg, #9c27b0 0%, #e91e63 100%)',
-              'linear-gradient(110deg, #e91e63 0%, #9c27b0 100%)',
-              'linear-gradient(130deg, #9c27b0 0%, #e91e63 100%)',
-              'linear-gradient(90deg, #9c27b0 0%, #e91e63 100%)'
+              'linear-gradient(90deg, #3f51b5 0%, #757de8 100%)',
+              'linear-gradient(110deg, #757de8 0%, #3f51b5 100%)',
+              'linear-gradient(130deg, #3f51b5 0%, #757de8 100%)',
+              'linear-gradient(90deg, #3f51b5 0%, #757de8 100%)'
             ],
           }}
           transition={{ 

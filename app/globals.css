@@ -32,37 +32,8 @@ body {
   @apply bg-background-light/70 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-background-light/20;
 }
 
-/* Performance optimized input fields */
 .input-field {
-  @apply w-full bg-white/10 border border-white/20 rounded-xl p-4 text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all;
-}
-
-/* Only apply backdrop filter on desktop for better performance */
-@media (min-width: 768px) {
-  .input-field {
-    @apply backdrop-blur-sm;
-  }
-}
-
-/* Mobile optimization - reduce animations and effects */
-@media (max-width: 767px) {
-  /* Applied on lower-powered devices to improve FPS */
-  .reduce-motion {
-    transition-duration: 0ms !important;
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-  }
-  
-  /* Simplify backgrounds for better performance */
-  .card {
-    @apply backdrop-blur-[4px] bg-background-light/80;
-  }
-  
-  /* Limit transition properties for better performance */
-  * {
-    transition-property: opacity, transform !important;
-  }
+  @apply w-full bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all;
 }
 
 /* Custom scrollbar */
@@ -75,10 +46,10 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: theme('colors.accent.DEFAULT');
+  background: theme('colors.primary.DEFAULT');
   border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: theme('colors.accent.light');
+  background: theme('colors.primary.light');
 } 

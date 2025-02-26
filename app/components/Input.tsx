@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
 interface InputProps {
@@ -15,7 +15,7 @@ interface InputProps {
   autoComplete?: string;
 }
 
-const Input: React.FC<InputProps> = React.memo(({
+const Input: React.FC<InputProps> = ({
   type = 'text',
   placeholder = '',
   value,
@@ -29,35 +29,9 @@ const Input: React.FC<InputProps> = React.memo(({
   autoComplete = 'off',
 }) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   
-  // Check for mobile device
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => {
-      window.removeEventListener('resize', checkMobile);
-    };
-  }, []);
-  
-  // Memoize handlers to prevent recreating on each render
-  const handleFocus = useCallback(() => setIsFocused(true), []);
-  const handleBlur = useCallback(() => setIsFocused(false), []);
-  
-  // Memoize label animation settings
-  const labelAnimation = useMemo(() => ({
-    x: isFocused ? 3 : 0,
-  }), [isFocused]);
-  
-  // Memoize scale animation
-  const scaleAnimation = useMemo(() => ({
-    scale: isFocused ? (isMobile ? 1.01 : 1.02) : 1, // Smaller scale effect on mobile
-  }), [isFocused, isMobile]);
+  const handleFocus = () => setIsFocused(true);
+  const handleBlur = () => setIsFocused(false);
   
   return (
     <motion.div 
@@ -70,31 +44,27 @@ const Input: React.FC<InputProps> = React.memo(({
         <motion.label 
           htmlFor={id || name} 
           className={`block text-sm font-medium mb-1 transition-colors duration-200 ${isFocused ? 'text-accent-light' : 'text-white/80'}`}
-          animate={labelAnimation}
+          animate={{ 
+            x: isFocused ? 3 : 0,
+          }}
           transition={{ duration: 0.2 }}
         >
           {label}
-          {required && <span className="text-accent-light ml-1">*</span>}
+          {required && <span className="text-secondary-light ml-1">*</span>}
         </motion.label>
       )}
       
       <motion.div
         className="relative"
-        animate={scaleAnimation}
+        animate={{ 
+          scale: isFocused ? 1.02 : 1,
+        }}
         transition={{ duration: 0.2 }}
       >
-        {/* Simplified blur effect for mobile */}
         <motion.div
-          className={`absolute inset-0 rounded-xl transition-opacity ${isMobile ? '' : 'transition-all'} duration-300 ${
-            isFocused ? `bg-accent/20 ${isMobile ? '' : 'blur-md'}` : 'blur-none opacity-0'
-          }`}
-          layoutId={!isMobile ? `input-glow-${name || id}` : undefined}
-          style={{
-            opacity: isFocused ? 1 : 0,
-            filter: isMobile && isFocused ? 'blur(8px)' : undefined
-          }}
+          className={`absolute inset-0 rounded-xl transition-all duration-300 ${isFocused ? 'bg-accent/20 blur-md' : 'blur-none opacity-0'}`}
+          layoutId={`input-glow-${name || id}`}
         />
-        
         <input
           type={type}
           placeholder={placeholder}
@@ -122,8 +92,6 @@ const Input: React.FC<InputProps> = React.memo(({
       </motion.div>
     </motion.div>
   );
-});
-
-Input.displayName = 'Input';
+};
 
 export default Input; 
