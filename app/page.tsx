@@ -261,13 +261,13 @@ export default function Home() {
                   </motion.h1>
                   
                   <motion.p 
-                    className="text-white/80 text-lg"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
+                    className="text-white text-lg font-medium backdrop-blur-sm py-3 px-4 rounded-lg bg-accent/10 shadow-inner shadow-accent/20 max-w-md mx-auto"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.9, duration: 0.5 }}
                   >
-                    Join thousands discovering their true energetic potential through
-                    <br className="hidden md:block" /> ancient wisdom and modern science.
+                    Join thousands discovering their true
+                    <br className="hidden md:block" /> potential through ancient wisdom and modern science.
                   </motion.p>
                 </div>
                 

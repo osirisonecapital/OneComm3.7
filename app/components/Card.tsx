@@ -34,7 +34,7 @@ const Card: React.FC<CardProps> = ({
       animate={animate}
       exit={exit}
       transition={transition}
-      whileHover={{ boxShadow: '0 8px 30px rgba(35, 69, 57, 0.3)' }}
+      whileHover={{ boxShadow: '0 8px 30px rgba(63, 81, 181, 0.3)' }}
     >
       {/* Subtle background animation */}
       <motion.div 
@@ -61,8 +61,8 @@ const Card: React.FC<CardProps> = ({
         className="absolute inset-0 rounded-2xl border border-transparent pointer-events-none opacity-0"
         whileHover={{ 
           opacity: 1,
-          borderColor: 'rgba(35, 69, 57, 0.3)',
-          boxShadow: 'inset 0 0 15px rgba(35, 69, 57, 0.2)' 
+          borderColor: 'rgba(63, 81, 181, 0.3)',
+          boxShadow: 'inset 0 0 15px rgba(63, 81, 181, 0.2)' 
         }}
         transition={{ duration: 0.3 }}
       />
