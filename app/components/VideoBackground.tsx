@@ -74,10 +74,10 @@ const VideoBackground: React.FC<VideoBackgroundProps> = ({
       )}
       
       {/* Gradient Overlay for depth and softer contrast - increased opacity */}
-      <div className="absolute inset-0 bg-gradient-to-r from-background via-white/10 to-background-blue" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background via-black/10 to-background-blue" />
       
-      {/* Removed the white overlay that might be making everything white */}
-      {/* <div className="absolute inset-0 bg-white bg-opacity-40 backdrop-blur-[2px]" /> */}
+      {/* Add a subtle darkening overlay */}
+      <div className="absolute inset-0 bg-black bg-opacity-15 backdrop-blur-[1px]" />
     </div>
   );
 };

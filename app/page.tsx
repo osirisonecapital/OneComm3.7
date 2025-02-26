@@ -265,8 +265,10 @@ export default function Home() {
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.9, duration: 0.5 }}
                   >
-                    Join thousands discovering their true energetic potential through
-                    <br className="hidden md:block" /> ancient wisdom and modern science.
+                    <span className="bg-black/20 backdrop-blur-sm px-2 py-1 rounded">
+                      Join thousands discovering their true energetic potential through
+                      <br className="hidden md:block" /> ancient wisdom and modern science.
+                    </span>
                   </motion.p>
                 </div>
                 

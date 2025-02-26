@@ -6,8 +6,8 @@
 
 :root {
   --foreground-rgb: 50, 25, 45;
-  --background-start-rgb: 254, 242, 246; /* Light pink/red */
-  --background-end-rgb: 240, 244, 255; /* Light blue */
+  --background-start-rgb: 248, 215, 225; /* Darker pink/red */
+  --background-end-rgb: 220, 230, 250; /* Darker light blue */
 }
 
 /* Apply the gradient directly to html as well as body for maximum compatibility */

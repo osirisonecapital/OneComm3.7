@@ -14,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full">
-      <body className="min-h-screen overflow-x-hidden bg-gradient-to-r from-background to-background-blue">
+      <body className="min-h-screen overflow-x-hidden bg-gradient-to-r from-[#f8d7e1] to-[#dce6fa] text-white">
         {children}
       </body>
     </html>
